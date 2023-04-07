@@ -78,5 +78,7 @@
     "network_error":"Ağ Hatası",
     "delete_account":"Hesabımı Sil",
     "ays_delete_account":"Hesabınızı silmek istediğinizden emin misiniz?",
-    "account_has_been_deleted":"Hesabınız başarıyla silindi."
+    "account_has_been_deleted":"Hesabınız başarıyla silindi.",
+    "user_search":"Kullanıcı Ara",
+    "new_chat":"Yeni Sohbet"
 }

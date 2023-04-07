@@ -31,6 +31,11 @@ class HomePageKeys {
   static String letsStart = 'lets_start';
 }
 
+class UserSearchPageKeys {
+  static String userSearch = 'user_search';
+  static String newChat = 'new_chat';
+}
+
 class LoginPageKeys {
   static String logIn = 'log_in';
   static String logInWithGoogle = 'log_in_with_google';

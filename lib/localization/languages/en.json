@@ -78,5 +78,7 @@
     "network_error":"Network Error",
     "delete_account":"Delete My Account",
     "ays_delete_account":"Are you sure you want to delete your account?",
-    "account_has_been_deleted":"Your account has been successfully deleted."
+    "account_has_been_deleted":"Your account has been successfully deleted.",
+    "user_search":"User Search",
+    "new_chat":"Yeni Sohbet"
 }

@@ -70,7 +70,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           height: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
                           width: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
                           child: CircularPhotoComponent(
-                            url: loggedUser!.photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
+                            url: loggedUser!.photoUrl,
                           ),
                         ),
                       ),
@@ -101,6 +101,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ListViewComponent(
               itemList: [
                 generateListViewItem(loggedUser!.email, CustomIconData.at, hasSuffix: false),
+                generateListViewItem(loggedUser!.userName, CustomIconData.user, hasSuffix: false),
               ],
             ),
             ListViewComponent(

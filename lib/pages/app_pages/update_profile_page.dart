@@ -33,11 +33,13 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
   TextEditingController emailEditingController = TextEditingController();
   TextEditingController firstNameEditingController = TextEditingController();
   TextEditingController lastNameEditingController = TextEditingController();
+  TextEditingController userNameEditingController = TextEditingController();
   bool isLoading = false;
   final _loginFormKey = GlobalKey<FormState>();
 
   final FocusNode _focusNode1 = FocusNode();
   final FocusNode _focusNode2 = FocusNode();
+  final FocusNode _focusNode3 = FocusNode();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -48,6 +50,7 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
     emailEditingController.text = loggedUser.email.toString();
     loggedUser.firstName != null ? firstNameEditingController.text = loggedUser.firstName.toString() : null;
     loggedUser.lastName != null ? lastNameEditingController.text = loggedUser.lastName.toString() : null;
+    loggedUser.userName != null ? userNameEditingController.text = loggedUser.userName.toString() : null;
   }
 
   @override
@@ -88,7 +91,7 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
                 },
                 child: pickedImage == null
                     ? CircularPhotoComponent(
-                        url: loggedUser.photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
+                        url: loggedUser.photoUrl,
                       )
                     : CircularPhotoComponent(
                         image: pickedImage,
@@ -165,6 +168,7 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
                 enabled: !isLoading,
                 textCapitalization: TextCapitalization.words,
                 focusNode: _focusNode2,
+                onSubmitted: (p0) => FocusScope.of(context).requestFocus(_focusNode3),
                 textInputAction: TextInputAction.next,
                 hintText: getTranslated(context, UpdateProfilePageKeys.lastName),
                 maxCharacter: 20,
@@ -191,6 +195,30 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
                   ),
                 ),
               ),
+              TextFormFieldComponent(
+                context: context,
+                textEditingController: userNameEditingController,
+                hintText: getTranslated(context, UpdateProfilePageKeys.userName),
+                focusNode: _focusNode3,
+                enabled: !isLoading,
+                maxCharacter: 20,
+                keyboardType: TextInputType.name,
+                validator: (userNameText) {
+                  bool usernameValid = AppConstants.usernameRegex.hasMatch(userNameText!.trim());
+                  if (firstNameEditingController.text.trim().isNotEmpty && lastNameEditingController.text.trim().isNotEmpty) {
+                    if (userNameText.isEmpty) {
+                      AppFunctions().showSnackbar(context, getTranslated(context, UpdateProfilePageKeys.enterUsername),
+                          backgroundColor: warningDark, icon: CustomIconData.featherPointed);
+                      return "";
+                    } else if (!usernameValid) {
+                      AppFunctions().showSnackbar(context, getTranslated(context, UpdateProfilePageKeys.enterValidUsername),
+                          backgroundColor: dangerDark, icon: CustomIconData.circleXmark);
+                      return "";
+                    }
+                  }
+                  return null;
+                },
+              ),
             ],
           ),
         ),
@@ -207,27 +235,39 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
                     setState(() {
                       isLoading = true;
                     });
-                    if (pickedImage != null) {
-                      loggedUser.photoUrl = await userService.uploadImage(
-                          pickedImage!, "ProfilePhotos/${loggedUser.email}/${DateTime.now().millisecondsSinceEpoch.toString()}.jpg");
-                    }
-                    loggedUser.firstName = firstNameEditingController.text.trim();
-                    loggedUser.lastName = lastNameEditingController.text.trim();
+                    userService.checkUsername(loggedUser, userNameEditingController.text.trim().replaceAll(" ", "").toLowerCase()).then((value) async {
+                      if (value) {
+                        if (pickedImage != null) {
+                          loggedUser.photoUrl = await userService.uploadImage(
+                                  pickedImage!, "ProfilePhotos/${loggedUser.email}/${DateTime.now().millisecondsSinceEpoch.toString()}.jpg") ??
+                              ImageAssetKeys.defaultProfilePhotoUrl;
+                        }
+                        loggedUser.firstName = firstNameEditingController.text.trim();
+                        loggedUser.lastName = lastNameEditingController.text.trim();
+                        loggedUser.userName = userNameEditingController.text.trim().replaceAll(" ", "").toLowerCase();
 
-                    userService.update(loggedUser).then((response) {
-                      if (response.isSucceeded) {
-                        userService.setLoggedUser(loggedUser).then((response) {
+                        userService.update(loggedUser).then((response) {
                           if (response.isSucceeded) {
-                            if (arg == 1) {
-                              ref.watch(loggedUserProvider.notifier).state = loggedUser;
-                              Navigator.pushNamedAndRemoveUntil(context, homePageRoute, (route) => false);
-                            } else {
-                              ref.watch(loggedUserProvider.notifier).state = loggedUser;
-                              Navigator.pop(context);
-                              Navigator.pushReplacementNamed(context, profilePageRoute);
-                            }
+                            userService.setLoggedUser(loggedUser).then((response) {
+                              if (response.isSucceeded) {
+                                if (arg == 1) {
+                                  ref.watch(loggedUserProvider.notifier).state = loggedUser;
+                                  Navigator.pushNamedAndRemoveUntil(context, homePageRoute, (route) => false);
+                                } else {
+                                  ref.watch(loggedUserProvider.notifier).state = loggedUser;
+                                  Navigator.pop(context);
+                                  Navigator.pushReplacementNamed(context, profilePageRoute);
+                                }
+                              }
+                            });
                           }
                         });
+                      } else {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        AppFunctions().showSnackbar(context, getTranslated(context, UpdateProfilePageKeys.takenUsername),
+                            backgroundColor: dangerDark, icon: CustomIconData.user);
                       }
                     });
                   } else {

@@ -72,8 +72,8 @@ class _ButtonComponentState extends State<ButtonComponent> {
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
-                              color: HSLColor.fromColor(widget.color).withLightness(0.6).toColor(),
-                              backgroundColor: HSLColor.fromColor(widget.color).withLightness(0.3).toColor(),
+                              color: HSLColor.fromColor(widget.color).withLightness(0.8).toColor(),
+                              backgroundColor: HSLColor.fromColor(widget.color).withLightness(0.6).toColor(),
                             ),
                           )
                         : SizedBox(

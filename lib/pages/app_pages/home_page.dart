@@ -23,7 +23,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   UserModel? loggedUser;
-  TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -53,7 +52,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   width: 35,
                   height: 35,
                   child: CircularPhotoComponent(
-                    url: ref.watch(loggedUserProvider.notifier).state!.photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
+                    url: ref.watch(loggedUserProvider.notifier).state!.photoUrl,
                     smallCircularProgressIndicator: true,
                   ),
                 ),
@@ -91,10 +90,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                 padding: const EdgeInsets.all(10),
                 child: FloatingActionButton(
                     backgroundColor: primaryColor,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, userSearchPageRoute);
+                    },
                     splashColor: themeProvider.isDarkMode ? darkPrimaryColor : lightPrimaryColor,
                     child: const IconComponent(
-                      iconData: CustomIconData.alarmClock,
+                      iconData: CustomIconData.plus,
                       iconWeight: CustomIconWeight.solid,
                       color: Colors.white,
                     )),

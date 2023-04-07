@@ -1,24 +1,27 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quickchat/constants/image_constants.dart';
 
 class UserModel {
   String email;
   String password;
-  String? firstName;
-  String? lastName;
-  String? photoUrl;
+  String firstName;
+  String lastName;
+  String userName;
+  String photoUrl;
   String? createdDate;
-  String? notificationToken;
+  String notificationToken;
 
   UserModel({
     required this.email,
     required this.password,
-    this.firstName,
-    this.lastName,
-    this.photoUrl,
+    this.firstName = "",
+    this.lastName = "",
+    this.userName = "",
+    this.photoUrl = ImageAssetKeys.defaultProfilePhotoUrl,
     this.createdDate,
-    this.notificationToken,
+    this.notificationToken = "",
   });
 
   Map<String, dynamic> toMap() {
@@ -27,7 +30,8 @@ class UserModel {
       'password': password,
       'firstName': firstName,
       'lastName': lastName,
-      'photoUrl': photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
+      'userName': userName,
+      'photoUrl': photoUrl,
       'createdDate': createdDate ?? DateTime.now().toString(),
       'notificationToken': notificationToken,
     };
@@ -37,11 +41,26 @@ class UserModel {
     return UserModel(
       email: map['email'] as String,
       password: map['password'] as String,
-      firstName: map['firstName'] != null ? map['firstName'] as String : null,
-      lastName: map['lastName'] != null ? map['lastName'] as String : null,
-      photoUrl: map['photoUrl'] != null ? map['photoUrl'] as String : null,
+      firstName: map['firstName'] as String,
+      lastName: map['lastName'] as String,
+      userName: map['userName'] as String,
+      photoUrl: map['photoUrl'] as String,
       createdDate: map['createdDate'] != null ? map['createdDate'] as String : null,
-      notificationToken: map['notificationToken'] != null ? map['notificationToken'] as String : null,
+      notificationToken: map['notificationToken'] as String,
+    );
+  }
+
+  factory UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return UserModel(
+      email: data['email'],
+      password: data['password'],
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      userName: data['userName'],
+      photoUrl: data['photoUrl'],
+      createdDate: data['createdDate'],
+      notificationToken: data['notificationToken'],
     );
   }
 
