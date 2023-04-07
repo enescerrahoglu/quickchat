@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quickchat/components/icon_component.dart';
 import 'package:quickchat/constants/color_constants.dart';
@@ -6,8 +10,13 @@ import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/services/user_service.dart';
+import 'package:http/http.dart' as http;
 
 class AppFunctions {
+  UserService userService = UserService();
+
   void showSnackbar(BuildContext context, String text, {Color? backgroundColor, CustomIconData? icon, int duration = 2}) {
     final snackbar = SnackBar(
       shape: RoundedRectangleBorder(
@@ -144,6 +153,55 @@ class AppFunctions {
     } else {
       debugPrint('$permissionStatus');
       return null;
+    }
+  }
+
+  Future<bool> sendVerificationCode(BuildContext context, String toMail, String code) async {
+    try {
+      await FirebaseFunctions.instance.httpsCallable('sendVerificationCode').call(<String, dynamic>{'to': toMail, 'code': code});
+      debugPrint("sended");
+      return true;
+    } on FirebaseFunctionsException catch (error) {
+      debugPrint(error.code);
+      debugPrint(error.details);
+      debugPrint(error.message);
+      return false;
+    }
+  }
+
+  int generateCode() {
+    int randomCode = Random().nextInt(9000) + 1000;
+    return randomCode;
+  }
+
+  void sendPushMessage(UserModel userModel, String title, String body) async {
+    userModel = await userService.getUser(userModel.email);
+    try {
+      await http.post(Uri.parse("https://fcm.googleapis.com/fcm/send"),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization':
+                'key=AAAAel2cfMY:APA91bHJEcdQXp7j6n53A8YE1mTgSDPGKLfB9udT6rL3MZP6_D8NmoBOGsQgM5P0MgyOlGuhFvWuzQsmouwaYVSUEDN2NQWPQsn6NWWkUEWiZF-IyPFsVJHgCN-mKA_fUTmDYXEpW0fm'
+          },
+          body: jsonEncode(<String, dynamic>{
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'status': 'done',
+              'title': title,
+              'body': body,
+            },
+            'notification': <String, dynamic>{
+              'android_channel_id': 'quickchat',
+              'title': title,
+              'body': body,
+            },
+            'to': userModel.notificationToken,
+          }));
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint("Error push notification!");
+      }
     }
   }
 }

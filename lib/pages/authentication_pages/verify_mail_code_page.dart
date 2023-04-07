@@ -6,9 +6,14 @@ import 'package:quickchat/components/text_component.dart';
 import 'package:quickchat/constants/app_constants.dart';
 import 'package:quickchat/constants/color_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
+import 'package:quickchat/helpers/app_functions.dart';
 import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/providers/provider_container.dart';
 import 'package:quickchat/providers/theme_provider.dart';
+import 'package:quickchat/routes/route_constants.dart';
+import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,9 +32,11 @@ class _VerifyMailCodePageState extends ConsumerState<VerifyMailCodePage> {
   final TextEditingController _textEditingController2 = TextEditingController();
   final TextEditingController _textEditingController3 = TextEditingController();
   final TextEditingController _textEditingController4 = TextEditingController();
+  UserService userService = UserService();
   bool _isLoading = false;
   late int seconds;
   String enteredCode = "";
+  UserModel? userModel;
 
   final FocusNode _focusNode1 = FocusNode();
   final FocusNode _focusNode2 = FocusNode();
@@ -44,6 +51,7 @@ class _VerifyMailCodePageState extends ConsumerState<VerifyMailCodePage> {
   void initState() {
     super.initState();
     startTimer();
+    userModel = ref.read(verificationUserProvider);
   }
 
   @override
@@ -115,6 +123,16 @@ class _VerifyMailCodePageState extends ConsumerState<VerifyMailCodePage> {
                     ? null
                     : () {
                         startTimer();
+                        setState(() {
+                          ref.watch(verificationCodeProvider.notifier).state = AppFunctions().generateCode();
+                        });
+                        AppFunctions().sendVerificationCode(context, userModel!.email, ref.watch(verificationCodeProvider).toString()).then((value) {
+                          AppFunctions().showSnackbar(context, getTranslated(context, LoginPageKeys.codeSent),
+                              icon: CustomIconData.paperPlane, backgroundColor: infoDark);
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        });
                       },
               ),
             ),
@@ -142,6 +160,58 @@ class _VerifyMailCodePageState extends ConsumerState<VerifyMailCodePage> {
     String digit4 = _textEditingController4.text;
     enteredCode = digit1 + digit2 + digit3 + digit4;
     debugPrint("code: $enteredCode");
+
+    if (verificationType == 0) {
+      if (userModel != null) {
+        if (enteredCode == ref.watch(verificationCodeProvider).toString()) {
+          AppFunctions()
+              .showSnackbar(context, getTranslated(context, LoginPageKeys.profileCreating), backgroundColor: success, icon: CustomIconData.circleCheck);
+          setState(() {
+            _isLoading = true;
+          });
+          userService.register(userModel!).then((response) {
+            if (response.isSucceeded) {
+              userService.login(userModel!).then((value) {
+                ref.read(loggedUserProvider.notifier).state = value.body;
+                setState(() {
+                  _isLoading = false;
+                });
+                userService.setLoggedUser(userModel!).then((response) {
+                  if (response.isSucceeded) {
+                    timer.cancel();
+                    Navigator.pushNamedAndRemoveUntil(context, indicatorPageRoute, (route) => false);
+                  }
+                });
+              });
+            } else {
+              timer.cancel();
+              Navigator.pushNamedAndRemoveUntil(context, loginPageRoute, (route) => false);
+            }
+          });
+        } else if (enteredCode.isEmpty) {
+          AppFunctions()
+              .showSnackbar(context, getTranslated(context, LoginPageKeys.enterCode), backgroundColor: warningDark, icon: CustomIconData.circleExclamation);
+        } else {
+          AppFunctions().showSnackbar(context, getTranslated(context, LoginPageKeys.checkCode), backgroundColor: dangerDark, icon: CustomIconData.circleXmark);
+        }
+      } else {
+        timer.cancel();
+        Navigator.pop(context);
+      }
+    } else if (verificationType == 1) {
+      if (enteredCode == ref.watch(verificationCodeProvider).toString()) {
+        timer.cancel();
+        Navigator.pushReplacementNamed(context, updatePasswordPageRoute);
+      } else if (enteredCode.isEmpty) {
+        AppFunctions()
+            .showSnackbar(context, getTranslated(context, LoginPageKeys.enterCode), backgroundColor: warningDark, icon: CustomIconData.circleExclamation);
+      } else {
+        AppFunctions().showSnackbar(context, getTranslated(context, LoginPageKeys.checkCode), backgroundColor: dangerDark, icon: CustomIconData.circleXmark);
+      }
+    } else {
+      timer.cancel();
+      Navigator.pop(context);
+    }
   }
 
   getDigitField(int index, dynamic themeProvider, TextEditingController textEditingController, FocusNode focusNode) {

@@ -8,6 +8,10 @@ import 'package:quickchat/constants/color_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
 import 'package:quickchat/helpers/app_functions.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/providers/provider_container.dart';
+import 'package:quickchat/routes/route_constants.dart';
+import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +24,8 @@ class UpdatePasswordPage extends ConsumerStatefulWidget {
 }
 
 class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage> {
+  UserService userService = UserService();
+  UserModel? userModel;
   final TextEditingController _emailTextEditingController = TextEditingController();
   final TextEditingController _passwordTextEditingController = TextEditingController();
   final TextEditingController _confirmPasswordTextEditingController = TextEditingController();
@@ -30,6 +36,8 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage> {
 
   @override
   void initState() {
+    userModel = ref.read(verificationUserProvider);
+    _emailTextEditingController.text = userModel!.email;
     super.initState();
   }
 
@@ -162,8 +170,26 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage> {
     );
   }
 
-  _update() {
+  void _update() {
     if (_loginFormKey.currentState!.validate()) {
+      userModel!.password = _passwordTextEditingController.text;
+      setState(() {
+        _isLoading = true;
+      });
+      userService.updatePassword(userModel!).then((response) {
+        setState(() {
+          _isLoading = false;
+        });
+        if (response.isSucceeded) {
+          AppFunctions()
+              .showSnackbar(context, getTranslated(context, LoginPageKeys.passwordUpdated), backgroundColor: success, icon: CustomIconData.circleCheck);
+          Navigator.pushNamedAndRemoveUntil(context, loginPageRoute, (route) => false);
+        } else {
+          AppFunctions()
+              .showSnackbar(context, getTranslated(context, CommonKeys.somethingWentWrong), backgroundColor: danger, icon: CustomIconData.circleXmark);
+          Navigator.pushNamedAndRemoveUntil(context, loginPageRoute, (route) => false);
+        }
+      });
     } else {
       debugPrint("false");
     }

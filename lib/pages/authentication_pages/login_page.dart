@@ -8,7 +8,10 @@ import 'package:quickchat/constants/string_constants.dart';
 import 'package:quickchat/helpers/app_functions.dart';
 import 'package:quickchat/helpers/shared_preferences_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/providers/provider_container.dart';
 import 'package:quickchat/routes/route_constants.dart';
+import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +24,7 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  UserService userService = UserService();
   final TextEditingController _emailTextEditingController = TextEditingController();
   final TextEditingController _passwordTextEditingController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
@@ -160,6 +164,50 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void _login() {
     if (_loginFormKey.currentState!.validate()) {
       debugPrint("true");
+      setState(() {
+        _isLoading = true;
+      });
+      UserModel model = UserModel(email: _emailTextEditingController.text.trim().toLowerCase(), password: _passwordTextEditingController.text);
+      userService.hasProfile(model.email).then((value) {
+        if (value) {
+          userService.login(model).then(
+            (response) {
+              if (response.isSucceeded) {
+                UserModel loggedUser = response.body;
+                ref.read(loggedUserProvider.notifier).state = response.body;
+
+                userService.setLoggedUser(loggedUser).then(
+                  (response) {
+                    if (response.isSucceeded) {
+                      Navigator.pushNamedAndRemoveUntil(context, indicatorPageRoute, (route) => false);
+                    }
+                  },
+                );
+              } else {
+                AppFunctions().showSnackbar(
+                  context,
+                  getTranslated(context, LoginPageKeys.checkYourInformation),
+                  icon: CustomIconData.userCheck,
+                  backgroundColor: warningDark,
+                );
+                setState(
+                  () {
+                    _isLoading = false;
+                  },
+                );
+              }
+            },
+          );
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          if (mounted) {
+            AppFunctions()
+                .showSnackbar(context, getTranslated(context, LoginPageKeys.nonExistingUser), icon: CustomIconData.userSlash, backgroundColor: dangerDark);
+          }
+        }
+      });
     } else {
       debugPrint("false");
     }

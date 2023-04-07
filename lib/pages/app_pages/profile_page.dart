@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:quickchat/components/button_component.dart';
+import 'package:quickchat/constants/image_constants.dart';
+import 'package:quickchat/models/user_model.dart';
 import 'package:quickchat/pages/settings_pages/app_settings_detail_page.dart';
 import 'package:quickchat/pages/settings_pages/settings_bottom_sheet_dialog_pages/language_settings_page.dart';
 import 'package:quickchat/pages/settings_pages/settings_bottom_sheet_dialog_pages/theme_settings_page.dart';
@@ -14,8 +16,10 @@ import 'package:quickchat/constants/color_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
 import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/providers/provider_container.dart';
 import 'package:quickchat/providers/theme_provider.dart';
 import 'package:quickchat/routes/route_constants.dart';
+import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
 import 'package:quickchat/widgets/modal_bottom_sheet_widget.dart';
 import 'package:provider/provider.dart' as provider;
@@ -28,6 +32,15 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
+  UserService userService = UserService();
+  UserModel? loggedUser;
+
+  @override
+  void initState() {
+    loggedUser = ref.read(loggedUserProvider);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = provider.Provider.of<ThemeProvider>(context);
@@ -56,14 +69,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         child: SizedBox(
                           height: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
                           width: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
-                          child: const CircularPhotoComponent(
-                            url: "https://logowik.com/content/uploads/images/flutter5786.jpg",
+                          child: CircularPhotoComponent(
+                            url: loggedUser!.photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const TextComponent(
-                        text: "Name Surname",
+                      TextComponent(
+                        text: "${loggedUser!.firstName} ${loggedUser!.lastName}",
                         headerType: HeaderType.h4,
                         color: primaryColor,
                         fontWeight: FontWeight.bold,
@@ -87,7 +100,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             const SizedBox(height: 5),
             ListViewComponent(
               itemList: [
-                generateListViewItem("email@gmail.com", CustomIconData.at, hasSuffix: false),
+                generateListViewItem(loggedUser!.email, CustomIconData.at, hasSuffix: false),
               ],
             ),
             ListViewComponent(
@@ -109,7 +122,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           CupertinoDialogAction(
                             child: Text(getTranslated(context, CommonKeys.yes)),
                             onPressed: () {
-                              Navigator.pushNamedAndRemoveUntil(context, loginPageRoute, (route) => false);
+                              userService.logout(context);
                             },
                           ),
                           CupertinoDialogAction(

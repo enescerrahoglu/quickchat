@@ -6,10 +6,15 @@ import 'package:quickchat/components/text_component.dart';
 import 'package:quickchat/components/text_form_field_component.dart';
 import 'package:quickchat/constants/app_constants.dart';
 import 'package:quickchat/constants/color_constants.dart';
+import 'package:quickchat/constants/image_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
 import 'package:quickchat/helpers/app_functions.dart';
 import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/providers/provider_container.dart';
+import 'package:quickchat/routes/route_constants.dart';
+import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +28,8 @@ class UpdateProfilePage extends ConsumerStatefulWidget {
 
 class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
   File? pickedImage;
+  UserService userService = UserService();
+  late UserModel loggedUser;
   TextEditingController emailEditingController = TextEditingController();
   TextEditingController firstNameEditingController = TextEditingController();
   TextEditingController lastNameEditingController = TextEditingController();
@@ -37,9 +44,10 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
   void initState() {
     super.initState();
     pickedImage = null;
-    emailEditingController.text = "email@gmail.com";
-    firstNameEditingController.text = "Name";
-    lastNameEditingController.text = "Surname";
+    loggedUser = ref.read(loggedUserProvider)!;
+    emailEditingController.text = loggedUser.email.toString();
+    loggedUser.firstName != null ? firstNameEditingController.text = loggedUser.firstName.toString() : null;
+    loggedUser.lastName != null ? lastNameEditingController.text = loggedUser.lastName.toString() : null;
   }
 
   @override
@@ -79,8 +87,8 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
                   });
                 },
                 child: pickedImage == null
-                    ? const CircularPhotoComponent(
-                        url: "https://logowik.com/content/uploads/images/flutter5786.jpg",
+                    ? CircularPhotoComponent(
+                        url: loggedUser.photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
                       )
                     : CircularPhotoComponent(
                         image: pickedImage,
@@ -192,7 +200,40 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
           text: getTranslated(context, arg == 1 ? CommonKeys.finishIt : CommonKeys.update),
           isWide: true,
           isLoading: isLoading,
-          onPressed: isLoading ? null : () {},
+          onPressed: isLoading
+              ? null
+              : () async {
+                  if (_loginFormKey.currentState!.validate()) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    if (pickedImage != null) {
+                      loggedUser.photoUrl = await userService.uploadImage(
+                          pickedImage!, "ProfilePhotos/${loggedUser.email}/${DateTime.now().millisecondsSinceEpoch.toString()}.jpg");
+                    }
+                    loggedUser.firstName = firstNameEditingController.text.trim();
+                    loggedUser.lastName = lastNameEditingController.text.trim();
+
+                    userService.update(loggedUser).then((response) {
+                      if (response.isSucceeded) {
+                        userService.setLoggedUser(loggedUser).then((response) {
+                          if (response.isSucceeded) {
+                            if (arg == 1) {
+                              ref.watch(loggedUserProvider.notifier).state = loggedUser;
+                              Navigator.pushNamedAndRemoveUntil(context, homePageRoute, (route) => false);
+                            } else {
+                              ref.watch(loggedUserProvider.notifier).state = loggedUser;
+                              Navigator.pop(context);
+                              Navigator.pushReplacementNamed(context, profilePageRoute);
+                            }
+                          }
+                        });
+                      }
+                    });
+                  } else {
+                    debugPrint("false");
+                  }
+                },
         ),
       ],
     );

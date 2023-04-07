@@ -24,8 +24,8 @@ const Color shimmerDarkHighlightColor = Color.fromARGB(255, 24, 38, 51);
 const Color appBackgroundLightColor = Color(0xFFFFFFFF);
 const Color appBackgroundDarkColor = Color(0xFF000000);
 
-const Color itemBackgroundLightColor = Color(0xFFeef3f9);
-const Color itemBackgroundDarkColor = Color(0xFF111b26);
+const Color itemBackgroundLightColor = Color(0xFFf4eeff);
+const Color itemBackgroundDarkColor = Color(0xFF1c1033);
 
 const Color imageBackgroundLightColor = Color(0xFFdde7f2);
 const Color imageBackgroundDarkColor = Color(0xFF2b4560);
@@ -37,8 +37,8 @@ const Color indicatorLightColor = Color(0xFF3c6086);
 const Color indicatorDarkColor = Color(0xFF3c6086);
 const Color indicatorBackgroundColor = Color(0xFFabc4e0);
 
-const Color primaryColor = Color(0xFF5689C0);
-const Color secondaryColor = Color(0xFFabc4e0);
+const Color primaryColor = Color(0xFF8C52FF);
+const Color secondaryColor = Color(0xFFF0E9FF);
 const Color lightPrimaryColor = Color(0xFFabc4e0);
 const Color darkPrimaryColor = Color(0xFF2b4560);
 
@@ -50,8 +50,8 @@ const Color textSecondaryDarkColor = Color(0xFFabc4e0);
 const Color itemBackgroundColor = Color(0xFFFFFFFF);
 const Color itemOutlineLightColor = Color(0xFFdde7f2);
 const Color itemOutlineDarkColor = Color(0xFF111b26);
-const Color hintTextLightColor = Color(0xFFabc4e0);
-const Color hintTextDarkColor = Color(0xFF2b4560);
+const Color hintTextLightColor = Color(0xFFd1baff);
+const Color hintTextDarkColor = Color(0xFF382166);
 
 const Color itemDividerLightColor = Color(0xFFc7d0da);
 const Color itemDividerDarkColor = Color(0xFF29323c);

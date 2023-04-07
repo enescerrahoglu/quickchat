@@ -2,10 +2,12 @@ import 'package:quickchat/components/circular_photo_component.dart';
 import 'package:quickchat/components/icon_component.dart';
 import 'package:quickchat/components/text_component.dart';
 import 'package:quickchat/constants/color_constants.dart';
+import 'package:quickchat/constants/image_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
-import 'package:quickchat/helpers/shared_preferences_helper.dart';
 import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/providers/provider_container.dart';
 import 'package:quickchat/providers/theme_provider.dart';
 import 'package:quickchat/routes/route_constants.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +22,13 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  UserModel? loggedUser;
   TextEditingController textEditingController = TextEditingController();
 
-  setDarkTheme(bool isDarkThemeValue) async {
-    await SharedPreferencesHelper.setBool("isDarkTheme", isDarkThemeValue);
-  }
-
-  setUseDeviceTheme(bool isDarkThemeValue) async {
-    await SharedPreferencesHelper.setBool("useDeviceTheme", isDarkThemeValue);
+  @override
+  void initState() {
+    loggedUser = ref.read(loggedUserProvider);
+    super.initState();
   }
 
   @override
@@ -47,12 +48,12 @@ class _HomePageState extends ConsumerState<HomePage> {
               onTap: () {
                 Navigator.pushNamed(context, profilePageRoute);
               },
-              child: const Align(
+              child: Align(
                 child: SizedBox(
                   width: 35,
                   height: 35,
                   child: CircularPhotoComponent(
-                    url: "https://logowik.com/content/uploads/images/flutter5786.jpg",
+                    url: ref.watch(loggedUserProvider.notifier).state!.photoUrl ?? ImageAssetKeys.defaultProfilePhotoUrl,
                     smallCircularProgressIndicator: true,
                   ),
                 ),

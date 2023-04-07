@@ -1,8 +1,9 @@
 import 'package:quickchat/constants/string_constants.dart';
+import 'package:quickchat/firebase_options.dart';
 import 'package:quickchat/helpers/shared_preferences_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
 import 'package:quickchat/localization/language_localization.dart';
-import 'package:quickchat/pages/app_pages/home_page.dart';
+import 'package:quickchat/pages/app_pages/indicator_page.dart';
 import 'package:quickchat/providers/theme_provider.dart';
 import 'package:quickchat/routes/router.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -71,6 +72,12 @@ initInfo() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await FirebaseMessaging.instance.getInitialMessage();
+  requestPermission();
+  initInfo();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const riverpod.ProviderScope(child: MyApp()));
 }
 
@@ -87,7 +94,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int count = 0;
   @override
   void initState() {
     super.initState();
@@ -115,10 +121,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) => provider.ChangeNotifierProvider(
         create: (_) => ThemeProvider(),
         child: provider.Consumer<ThemeProvider>(builder: (context, ThemeProvider themeProvider, child) {
-          if (count == 0) {
-            themeProvider.toggleTheme();
-            count++;
-          }
+          themeProvider.toggleTheme();
           return MaterialApp(
             locale: _locale,
             supportedLocales: const [
@@ -151,7 +154,7 @@ class _MyAppState extends State<MyApp> {
                 child: child!,
               );
             },
-            home: const HomePage(),
+            home: const IndicatorPage(),
           );
         }),
       );

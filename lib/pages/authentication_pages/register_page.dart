@@ -7,7 +7,10 @@ import 'package:quickchat/constants/color_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
 import 'package:quickchat/helpers/app_functions.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/user_model.dart';
+import 'package:quickchat/providers/provider_container.dart';
 import 'package:quickchat/routes/route_constants.dart';
+import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +23,7 @@ class RegisterPage extends ConsumerStatefulWidget {
 }
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
+  UserService userService = UserService();
   final TextEditingController _emailTextEditingController = TextEditingController();
   final TextEditingController _passwordTextEditingController = TextEditingController();
   final TextEditingController _confirmPasswordTextEditingController = TextEditingController();
@@ -154,7 +158,32 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   void _register() {
     if (_loginFormKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       debugPrint("true");
+      UserModel model = UserModel(email: _emailTextEditingController.text.trim().toLowerCase(), password: _passwordTextEditingController.text);
+      userService.hasProfile(model.email).then(
+        (value) async {
+          if (value) {
+            AppFunctions().showSnackbar(context, getTranslated(context, getTranslated(context, LoginPageKeys.currentUser)),
+                backgroundColor: warningDark, icon: CustomIconData.circleUser);
+            setState(() {
+              _isLoading = false;
+            });
+          } else {
+            ref.watch(verificationCodeProvider.notifier).state = AppFunctions().generateCode();
+            AppFunctions().sendVerificationCode(context, model.email, ref.watch(verificationCodeProvider).toString()).then((value) {
+              AppFunctions().showSnackbar(context, getTranslated(context, LoginPageKeys.codeSent), icon: CustomIconData.paperPlane, backgroundColor: infoDark);
+              setState(() {
+                _isLoading = false;
+              });
+              ref.watch(verificationUserProvider.notifier).state = model;
+              Navigator.pushNamed(context, verifyMailCodePageRoute, arguments: 0);
+            });
+          }
+        },
+      );
     } else {
       debugPrint("false");
     }
