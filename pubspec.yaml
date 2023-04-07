@@ -64,6 +64,8 @@ dependencies:
   flutter_tts: ^3.6.3
   shimmer: ^2.0.0
   permission_handler: ^10.2.0
+  cached_network_image: ^3.2.3
+  firebase_database: ^10.1.0
 
 dev_dependencies:
   flutter_test:

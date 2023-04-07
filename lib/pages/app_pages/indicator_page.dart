@@ -40,6 +40,7 @@ class _IndicatorPageState extends ConsumerState<IndicatorPage> {
               userService.getUser(loggedUser!.email).then((model) async {
                 String? token = await getToken();
                 debugPrint('user token: $token');
+                model.notificationToken = token ?? "";
                 userService.updateNotificationToken(model, token ?? '');
 
                 ref.watch(loggedUserProvider.notifier).state = model;

@@ -2,16 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quickchat/helpers/shared_preferences_helper.dart';
+import 'package:quickchat/models/message_model.dart';
 import 'package:quickchat/models/response_model.dart';
 import 'package:quickchat/models/user_model.dart';
 import 'package:quickchat/routes/route_constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class UserService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference profiles = FirebaseFirestore.instance.collection('profiles');
   CollectionReference notificationTokens = FirebaseFirestore.instance.collection('notificationTokens');
+
+  FirebaseDatabase database = FirebaseDatabase.instance;
 
   Future<ResponseModel> register(UserModel model) async {
     bool isSucceeded = false;
@@ -129,10 +133,13 @@ class UserService {
 
   Future<bool> userInfoFull(String email) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('profiles').where('email', isEqualTo: email).get();
+    var userName = snapshot.docs[0].get("userName");
     var firstName = snapshot.docs[0].get("firstName");
     var lastName = snapshot.docs[0].get("lastName");
 
-    if ((firstName == null || firstName.toString().isEmpty) || (lastName == null || lastName.toString().isEmpty)) {
+    if ((userName == null || userName.toString().isEmpty) ||
+        (firstName == null || firstName.toString().isEmpty) ||
+        (lastName == null || lastName.toString().isEmpty)) {
       debugPrint("null info");
       return false;
     } else {
@@ -178,5 +185,50 @@ class UserService {
       }
     });
     return ResponseModel(isSucceeded: isSucceeded);
+  }
+
+  Future<bool> checkUsername(UserModel model, String username) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('profiles').where('userName', isEqualTo: username).get();
+    if (model.userName == username) {
+      return true;
+    }
+    return snapshot.docs.isEmpty;
+  }
+
+  Future<ResponseModel> sendMessage(UserModel loggedUser, UserModel targetUser, MessageModel messageModel) async {
+    bool isSucceeded = false;
+    String chatId = loggedUser.userName.compareTo(targetUser.userName) < 0
+        ? "${loggedUser.userName}-${targetUser.userName}"
+        : "${targetUser.userName}-${loggedUser.userName}";
+    try {
+      DatabaseReference messageRef = FirebaseDatabase.instance.ref().child("chats").child(chatId).child(messageModel.id);
+      await messageRef.set(messageModel.toJson());
+      isSucceeded = true;
+    } catch (error) {
+      isSucceeded = false;
+    }
+
+    return ResponseModel(isSucceeded: isSucceeded);
+  }
+
+  Future<List<MessageModel>> getMessages(UserModel loggedUser, UserModel targetUser) async {
+    List<MessageModel> messages = [];
+    String chatId = loggedUser.userName.compareTo(targetUser.userName) < 0
+        ? "${loggedUser.userName}-${targetUser.userName}"
+        : "${targetUser.userName}-${loggedUser.userName}";
+    try {
+      DatabaseReference messagesRef = FirebaseDatabase.instance.ref().child("chats").child(chatId);
+      DataSnapshot dataSnapshot = await messagesRef.get();
+      if (dataSnapshot.value != null) {
+        Map<dynamic, dynamic> messagesMap = dataSnapshot.value as Map<dynamic, dynamic>;
+        messagesMap.forEach((key, value) {
+          MessageModel message = MessageModel.fromJson(value);
+          messages.add(message);
+        });
+      }
+    } catch (error) {
+      debugPrint("Error getting messages: $error");
+    }
+    return messages;
   }
 }
