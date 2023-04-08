@@ -68,7 +68,7 @@ class AppFunctions {
     );
   }
 
-  void showMediaSnackbar(BuildContext context, Function cameraFunction, Function galleryFunction) {
+  void showMediaSnackbar(BuildContext context, Function cameraFunction, Function galleryFunction, {Color? backgroundColor = primaryColor}) {
     final snackbar = SnackBar(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
@@ -109,7 +109,7 @@ class AppFunctions {
         ],
       ),
       behavior: SnackBarBehavior.fixed,
-      backgroundColor: primaryColor,
+      backgroundColor: backgroundColor,
       duration: const Duration(seconds: 3),
     );
 

@@ -3,6 +3,7 @@ import 'package:quickchat/components/icon_component.dart';
 import 'package:quickchat/components/text_component.dart';
 import 'package:quickchat/constants/color_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
+import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
 import 'package:quickchat/models/chat_model.dart';
 import 'package:quickchat/models/user_model.dart';
@@ -76,21 +77,40 @@ class _HomePageState extends ConsumerState<HomePage> {
               Column(
                 children: [
                   Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(10),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: chats.length,
-                      itemBuilder: (context, index) {
-                        return ChatRowWidget(
-                          loggedUser: loggedUser!,
-                          chatModel: chats[index],
-                          onTap: () {
-                            ref.watch(targetUserProvider.notifier).state = chats[index].targetUser;
-                            Navigator.pushNamed(context, chatPageRoute);
-                          },
-                        );
-                      },
-                    ),
+                    child: chats.isNotEmpty
+                        ? ListView.builder(
+                            padding: const EdgeInsets.all(10),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: chats.length,
+                            itemBuilder: (context, index) {
+                              return ChatRowWidget(
+                                loggedUser: loggedUser!,
+                                chatModel: chats[index],
+                                onTap: () {
+                                  ref.watch(targetUserProvider.notifier).state = chats[index].targetUser;
+                                  Navigator.pushNamed(context, chatPageRoute);
+                                },
+                              );
+                            },
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconComponent(
+                                iconData: CustomIconData.messages,
+                                color: primaryColor,
+                                size: UIHelper.getDeviceWidth(context) / 6,
+                              ),
+                              const SizedBox(height: 10),
+                              TextComponent(
+                                text: getTranslated(context, CommonKeys.startMessaging),
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              )
+                            ],
+                          ),
                   )
                 ],
               ),

@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart' as provider;
+import 'package:quickchat/components/rectangle_photo_component.dart';
 import 'package:quickchat/components/text_component.dart';
 import 'package:quickchat/constants/color_constants.dart';
+import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/models/message_model.dart';
 import 'package:quickchat/models/user_model.dart';
 import 'package:quickchat/providers/theme_provider.dart';
@@ -26,16 +28,18 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
         ? Align(
             alignment: Alignment.centerRight,
             child: Container(
+              constraints: BoxConstraints(maxWidth: UIHelper.getDeviceWidth(context) / 1.25),
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.symmetric(vertical: 3),
               decoration: BoxDecoration(
-                color: (themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor),
+                color: (themeProvider.isDarkMode ? messageBubbleSenderDarkColor : messageBubbleSenderLightColor),
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10), topRight: Radius.circular(3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Flexible(
                     child: InkWell(
@@ -47,12 +51,22 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          TextComponent(
-                            text: widget.messageModel.content,
-                            textAlign: TextAlign.start,
-                            headerType: HeaderType.h5,
-                          ),
-                          const SizedBox(height: 3),
+                          widget.messageModel.hasImage
+                              ? Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: RectanglePhotoComponent(url: widget.messageModel.imageUrl),
+                                )
+                              : const SizedBox(),
+                          widget.messageModel.content.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: TextComponent(
+                                    text: widget.messageModel.content,
+                                    textAlign: TextAlign.start,
+                                    headerType: HeaderType.h5,
+                                  ),
+                                )
+                              : const SizedBox(),
                           TextComponent(
                             text: DateFormat("dd.MM.yyyy HH:mm").format(DateTime.parse(widget.messageModel.messageDate)),
                             textAlign: TextAlign.end,
@@ -70,11 +84,12 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
         : Align(
             alignment: Alignment.centerLeft,
             child: Container(
+              constraints: BoxConstraints(maxWidth: UIHelper.getDeviceWidth(context) / 1.25),
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.symmetric(vertical: 3),
-              decoration: const BoxDecoration(
-                color: primaryColor,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: (themeProvider.isDarkMode ? messageBubbleTargerDarkColor : messageBubbleTargetLightColor),
+                borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(3), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10), topRight: Radius.circular(10)),
               ),
               child: Row(
@@ -91,13 +106,22 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextComponent(
-                            color: Colors.white,
-                            text: widget.messageModel.content,
-                            textAlign: TextAlign.start,
-                            headerType: HeaderType.h5,
-                          ),
-                          const SizedBox(height: 3),
+                          widget.messageModel.hasImage
+                              ? Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: RectanglePhotoComponent(url: widget.messageModel.imageUrl),
+                                )
+                              : const SizedBox(),
+                          widget.messageModel.content.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: TextComponent(
+                                    text: widget.messageModel.content,
+                                    textAlign: TextAlign.start,
+                                    headerType: HeaderType.h5,
+                                  ),
+                                )
+                              : const SizedBox(),
                           TextComponent(
                             text: DateFormat("dd.MM.yyyy HH:mm").format(DateTime.parse(widget.messageModel.messageDate)),
                             textAlign: TextAlign.end,

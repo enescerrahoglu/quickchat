@@ -85,5 +85,6 @@
     "send_message_to_yourself":"Kendine mesaj gönder",
     "yourself":"(Kendin)",
     "you":"Sen",
-    "target_join_date":"Katılma Tarihi:"
+    "target_join_date":"Katılma Tarihi:",
+    "start_messaging":"Mesajlaşmaya Başla!"
 }

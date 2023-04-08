@@ -85,5 +85,6 @@
     "send_message_to_yourself":"Send message to yourself",
     "yourself":"(Yourself)",
     "you":"You",
-    "target_join_date":"Join Date:"
+    "target_join_date":"Join Date:",
+    "start_messaging":"Start Messaging!"
 }
