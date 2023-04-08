@@ -108,7 +108,8 @@ class _EmailPageState extends ConsumerState<EmailPage> {
                                     });
                                     AppFunctions().showSnackbar(context, getTranslated(context, LoginPageKeys.codeSent),
                                         icon: CustomIconData.paperPlane, backgroundColor: infoDark);
-                                    ref.watch(verificationUserProvider.notifier).state = UserModel(email: _emailTextEditingController.text, password: "");
+                                    ref.watch(verificationUserProvider.notifier).state =
+                                        UserModel(id: "", email: _emailTextEditingController.text, password: "");
                                     Navigator.pushNamed(context, verifyMailCodePageRoute, arguments: 1);
                                   });
                                 } else {

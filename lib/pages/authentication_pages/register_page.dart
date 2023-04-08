@@ -162,7 +162,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         _isLoading = true;
       });
       debugPrint("true");
-      UserModel model = UserModel(email: _emailTextEditingController.text.trim().toLowerCase(), password: _passwordTextEditingController.text);
+      UserModel model = UserModel(id: "", email: _emailTextEditingController.text.trim().toLowerCase(), password: _passwordTextEditingController.text);
       userService.hasProfile(model.email).then(
         (value) async {
           if (value) {

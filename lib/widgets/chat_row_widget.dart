@@ -6,24 +6,23 @@ import 'package:quickchat/constants/image_constants.dart';
 import 'package:quickchat/constants/string_constants.dart';
 import 'package:quickchat/helpers/ui_helper.dart';
 import 'package:quickchat/localization/app_localization.dart';
+import 'package:quickchat/models/chat_model.dart';
 import 'package:quickchat/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:quickchat/providers/theme_provider.dart';
 
-class UserRowWidget extends StatefulWidget {
-  final UserModel loggedUserModel;
-  final UserModel userModel;
+class ChatRowWidget extends StatefulWidget {
+  final UserModel loggedUser;
+  final ChatModel chatModel;
   final Widget? suffixWidget;
   final Function? onTap;
-  const UserRowWidget({super.key, required this.loggedUserModel, required this.userModel, this.suffixWidget, this.onTap});
+  const ChatRowWidget({super.key, required this.loggedUser, required this.chatModel, this.suffixWidget, this.onTap});
 
   @override
-  State<UserRowWidget> createState() => _UserRowWidgetState();
+  State<ChatRowWidget> createState() => _ChatRowWidgetState();
 }
 
-class _UserRowWidgetState extends State<UserRowWidget> {
-  UserModel? loggedUser;
-
+class _ChatRowWidgetState extends State<ChatRowWidget> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -64,7 +63,7 @@ class _UserRowWidgetState extends State<UserRowWidget> {
                                     color: primaryColor.withOpacity(0.1),
                                     child: CachedNetworkImage(
                                       placeholder: (context, url) => Image.asset(ImageAssetKeys.defaultProfilePhoto),
-                                      imageUrl: widget.userModel.photoUrl,
+                                      imageUrl: widget.chatModel.targetUser.photoUrl,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -76,43 +75,32 @@ class _UserRowWidgetState extends State<UserRowWidget> {
                             fit: FlexFit.tight,
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 10),
-                              child: widget.userModel.email == widget.loggedUserModel.email
-                                  ? Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        TextComponent(
-                                          text: getTranslated(context, UserSearchPageKeys.sendMessageToYourself),
-                                          headerType: HeaderType.h5,
-                                          fontWeight: FontWeight.bold,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false,
-                                        ),
-                                      ],
-                                    )
-                                  : Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        TextComponent(
-                                          text: "${widget.userModel.firstName} ${widget.userModel.lastName}",
-                                          headerType: HeaderType.h5,
-                                          color: primaryColor,
-                                          fontWeight: FontWeight.bold,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false,
-                                        ),
-                                        const SizedBox(height: 3),
-                                        TextComponent(
-                                          text: widget.userModel.userName,
-                                          color: themeProvider.isDarkMode ? darkPrimaryColor : lightPrimaryColor,
-                                          headerType: HeaderType.h7,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false,
-                                        ),
-                                      ],
-                                    ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextComponent(
+                                    text: widget.loggedUser.email == widget.chatModel.targetUser.email
+                                        ? getTranslated(context, CommonKeys.yourself)
+                                        : "${widget.chatModel.targetUser.firstName} ${widget.chatModel.targetUser.lastName}",
+                                    headerType: HeaderType.h5,
+                                    fontWeight: FontWeight.bold,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                  ),
+                                  const SizedBox(height: 3),
+                                  TextComponent(
+                                    text: widget.chatModel.lastMessage.senderMail == widget.loggedUser.email
+                                        ? "${getTranslated(context, CommonKeys.you)}: ${widget.chatModel.lastMessage.content}"
+                                        : widget.chatModel.lastMessage.content,
+                                    color: themeProvider.isDarkMode ? darkPrimaryColor : lightPrimaryColor,
+                                    headerType: HeaderType.h7,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           widget.suffixWidget != null ? Padding(padding: const EdgeInsets.only(right: 10), child: widget.suffixWidget) : const SizedBox(),

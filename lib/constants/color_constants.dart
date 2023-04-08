@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 MaterialColor primaryMaterialColor = const MaterialColor(
-  0xFF5689C0,
+  0xFF8C52FF,
   <int, Color>{
-    50: Color.fromRGBO(86, 137, 192, .1),
-    100: Color.fromRGBO(86, 137, 192, .2),
-    200: Color.fromRGBO(86, 137, 192, .3),
-    300: Color.fromRGBO(86, 137, 192, .4),
-    400: Color.fromRGBO(86, 137, 192, .5),
-    500: Color.fromRGBO(86, 137, 192, .6),
-    600: Color.fromRGBO(86, 137, 192, .7),
-    700: Color.fromRGBO(86, 137, 192, .8),
-    800: Color.fromRGBO(86, 137, 192, .9),
-    900: Color.fromRGBO(86, 137, 192, 1),
+    50: Color.fromRGBO(140, 82, 255, .1),
+    100: Color.fromRGBO(140, 82, 255, .2),
+    200: Color.fromRGBO(140, 82, 255, .3),
+    300: Color.fromRGBO(140, 82, 255, .4),
+    400: Color.fromRGBO(140, 82, 255, .5),
+    500: Color.fromRGBO(140, 82, 255, .6),
+    600: Color.fromRGBO(140, 82, 255, .7),
+    700: Color.fromRGBO(140, 82, 255, .8),
+    800: Color.fromRGBO(140, 82, 255, .9),
+    900: Color.fromRGBO(140, 82, 255, 1),
   },
 );
 
@@ -53,8 +53,8 @@ const Color itemOutlineDarkColor = Color(0xFF111b26);
 const Color hintTextLightColor = Color(0xFFba97ff);
 const Color hintTextDarkColor = Color(0xFF6239b3);
 
-const Color itemDividerLightColor = Color(0xFFc7d0da);
-const Color itemDividerDarkColor = Color(0xFF29323c);
+const Color itemDividerLightColor = Color(0xFFddcbff);
+const Color itemDividerDarkColor = Color(0xFF462980);
 const Color iconLightColor = Color(0xFF000000);
 const Color iconDarkColor = Color(0xFFFFFFFF);
 

@@ -1,5 +1,5 @@
 {
-    "app_name": "Template App",
+    "app_name": "QuickChat",
     "home_page": "Ana Sayfa",
     "settings": "Ayarlar",
     "yes": "Evet",
@@ -80,5 +80,10 @@
     "ays_delete_account":"Hesabınızı silmek istediğinizden emin misiniz?",
     "account_has_been_deleted":"Hesabınız başarıyla silindi.",
     "user_search":"Kullanıcı Ara",
-    "new_chat":"Yeni Sohbet"
+    "user_not_found":"Kullanıcı bulunamadı",
+    "new_chat":"Yeni Sohbet",
+    "send_message_to_yourself":"Kendine mesaj gönder",
+    "yourself":"(Kendin)",
+    "you":"Sen",
+    "target_join_date":"Katılma Tarihi:"
 }

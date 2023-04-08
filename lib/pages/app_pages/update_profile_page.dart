@@ -48,9 +48,9 @@ class _UpdateProfilePageState extends ConsumerState<UpdateProfilePage> {
     pickedImage = null;
     loggedUser = ref.read(loggedUserProvider)!;
     emailEditingController.text = loggedUser.email.toString();
-    loggedUser.firstName != null ? firstNameEditingController.text = loggedUser.firstName.toString() : null;
-    loggedUser.lastName != null ? lastNameEditingController.text = loggedUser.lastName.toString() : null;
-    loggedUser.userName != null ? userNameEditingController.text = loggedUser.userName.toString() : null;
+    firstNameEditingController.text = loggedUser.firstName.toString();
+    lastNameEditingController.text = loggedUser.lastName.toString();
+    userNameEditingController.text = loggedUser.userName.toString();
   }
 
   @override

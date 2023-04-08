@@ -167,7 +167,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         _isLoading = true;
       });
-      UserModel model = UserModel(email: _emailTextEditingController.text.trim().toLowerCase(), password: _passwordTextEditingController.text);
+      UserModel model = UserModel(id: "", email: _emailTextEditingController.text.trim().toLowerCase(), password: _passwordTextEditingController.text);
       userService.hasProfile(model.email).then((value) {
         if (value) {
           userService.login(model).then(

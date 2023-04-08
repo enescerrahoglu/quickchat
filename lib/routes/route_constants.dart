@@ -11,3 +11,4 @@ const String updatePasswordPageRoute = "UpdatePasswordPageRoute";
 const String navigationPageRoute = "NavigationPageRoute";
 const String userSearchPageRoute = "UserSearchPageRoute";
 const String chatPageRoute = "ChatPageRoute";
+const String targetProfilePageRoute = "TargetProfilePageRoute";
