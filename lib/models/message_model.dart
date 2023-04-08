@@ -5,12 +5,16 @@ class MessageModel {
   String content;
   String senderMail;
   String messageDate;
+  bool hasImage;
+  String imageUrl;
 
   MessageModel({
     required this.id,
     required this.content,
     required this.senderMail,
     required this.messageDate,
+    this.hasImage = false,
+    this.imageUrl = "",
   });
 
   Map<String, dynamic> toMap() {
@@ -19,6 +23,8 @@ class MessageModel {
       'content': content,
       'senderMail': senderMail,
       'messageDate': messageDate,
+      'hasImage': hasImage,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -28,6 +34,8 @@ class MessageModel {
       content: map['content'] as String,
       senderMail: map['senderMail'] as String,
       messageDate: map['messageDate'] as String,
+      hasImage: map['hasImage'] as bool,
+      imageUrl: map['imageUrl'] as String,
     );
   }
 

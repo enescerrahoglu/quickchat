@@ -28,6 +28,7 @@ class CommonKeys {
   static String yourself = 'yourself';
   static String you = 'you';
   static String joinDate = 'target_join_date';
+  static String startMessaging = 'start_messaging';
 }
 
 class HomePageKeys {

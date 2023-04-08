@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 MaterialColor primaryMaterialColor = const MaterialColor(
   0xFF8C52FF,
   <int, Color>{
-    50: Color.fromRGBO(140, 82, 255, .1),
-    100: Color.fromRGBO(140, 82, 255, .2),
-    200: Color.fromRGBO(140, 82, 255, .3),
-    300: Color.fromRGBO(140, 82, 255, .4),
-    400: Color.fromRGBO(140, 82, 255, .5),
-    500: Color.fromRGBO(140, 82, 255, .6),
-    600: Color.fromRGBO(140, 82, 255, .7),
-    700: Color.fromRGBO(140, 82, 255, .8),
-    800: Color.fromRGBO(140, 82, 255, .9),
-    900: Color.fromRGBO(140, 82, 255, 1),
+    50: Color.fromARGB(25, 140, 82, 255),
+    100: Color.fromARGB(50, 140, 82, 255),
+    200: Color.fromARGB(75, 140, 82, 255),
+    300: Color.fromARGB(100, 140, 82, 255),
+    400: Color.fromARGB(125, 140, 82, 255),
+    500: Color.fromARGB(150, 140, 82, 255),
+    600: Color.fromARGB(175, 140, 82, 255),
+    700: Color.fromARGB(200, 140, 82, 255),
+    800: Color.fromARGB(225, 140, 82, 255),
+    900: Color.fromARGB(255, 140, 82, 255),
   },
 );
 
@@ -23,6 +23,11 @@ const Color shimmerDarkHighlightColor = Color.fromARGB(255, 24, 38, 51);
 
 const Color appBackgroundLightColor = Color(0xFFFFFFFF);
 const Color appBackgroundDarkColor = Color(0xFF000000);
+
+const Color messageBubbleSenderLightColor = Color(0xFFe8dcff);
+const Color messageBubbleSenderDarkColor = Color(0xFF2a194c);
+const Color messageBubbleTargetLightColor = Color(0xFFba97ff);
+const Color messageBubbleTargerDarkColor = Color(0xFF6239b3);
 
 const Color itemBackgroundLightColor = Color(0xFFf4eeff);
 const Color itemBackgroundDarkColor = Color(0xFF1c1033);
