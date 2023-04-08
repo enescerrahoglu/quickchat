@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quickchat/constants/image_constants.dart';
 
 class UserModel {
+  String id;
   String email;
   String password;
   String firstName;
@@ -14,6 +15,7 @@ class UserModel {
   String notificationToken;
 
   UserModel({
+    required this.id,
     required this.email,
     required this.password,
     this.firstName = "",
@@ -26,6 +28,7 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'email': email,
       'password': password,
       'firstName': firstName,
@@ -39,6 +42,7 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
+      id: map['id'] as String,
       email: map['email'] as String,
       password: map['password'] as String,
       firstName: map['firstName'] as String,
@@ -53,6 +57,7 @@ class UserModel {
   factory UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     return UserModel(
+      id: data['id'],
       email: data['email'],
       password: data['password'],
       firstName: data['firstName'],

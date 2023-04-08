@@ -1,6 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
-import 'package:quickchat/components/button_component.dart';
-import 'package:quickchat/constants/image_constants.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:quickchat/models/user_model.dart';
 import 'package:quickchat/pages/settings_pages/app_settings_detail_page.dart';
 import 'package:quickchat/pages/settings_pages/settings_bottom_sheet_dialog_pages/language_settings_page.dart';
@@ -21,6 +23,7 @@ import 'package:quickchat/providers/theme_provider.dart';
 import 'package:quickchat/routes/route_constants.dart';
 import 'package:quickchat/services/user_service.dart';
 import 'package:quickchat/widgets/base_scaffold_widget.dart';
+import 'package:quickchat/widgets/marquee_widget.dart';
 import 'package:quickchat/widgets/modal_bottom_sheet_widget.dart';
 import 'package:provider/provider.dart' as provider;
 
@@ -34,6 +37,7 @@ class ProfilePage extends ConsumerStatefulWidget {
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   UserService userService = UserService();
   UserModel? loggedUser;
+  bool _showPreview = false;
 
   @override
   void initState() {
@@ -59,42 +63,79 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 color: themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor,
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(25),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        child: SizedBox(
-                          height: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
-                          width: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
-                          child: CircularPhotoComponent(
-                            url: loggedUser!.photoUrl,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextComponent(
-                        text: "${loggedUser!.firstName} ${loggedUser!.lastName}",
-                        headerType: HeaderType.h4,
-                        color: primaryColor,
-                        fontWeight: FontWeight.bold,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.fade,
-                      ),
-                      const SizedBox(height: 20),
-                      ButtonComponent(
-                        isOutLined: true,
-                        text: getTranslated(context, UpdateProfilePageKeys.updateProfile),
+              child: Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  Material(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(
                         onPressed: () {
                           Navigator.pushNamed(context, updateProfilePageRoute);
                         },
+                        icon: const IconComponent(
+                          iconData: CustomIconData.pen,
+                          color: primaryColor,
+                        ),
+                        splashRadius: AppConstants.iconSplashRadius,
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onLongPress: () {
+                              HapticFeedback.vibrate();
+                              setState(() {
+                                _showPreview = true;
+                              });
+                            },
+                            onLongPressEnd: (details) {
+                              HapticFeedback.vibrate();
+                              setState(() {
+                                _showPreview = false;
+                              });
+                            },
+                            child: SizedBox(
+                              height: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
+                              width: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) / 2.5 : UIHelper.getDeviceHeight(context) / 2,
+                              child: Hero(
+                                tag: loggedUser!.email,
+                                child: CircularPhotoComponent(
+                                  url: loggedUser!.photoUrl,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          MarqueeWidget(
+                            child: TextComponent(
+                              text: "${loggedUser!.firstName} ${loggedUser!.lastName}",
+                              headerType: HeaderType.h4,
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          TextComponent(
+                            text:
+                                "${getTranslated(context, ProfilePageKeys.joined1)}${DateFormat('dd.MM.yyyy').format(DateTime.parse(loggedUser!.createdDate!))}${getTranslated(context, ProfilePageKeys.joined2)}",
+                            headerType: HeaderType.h8,
+                            color: themeProvider.isDarkMode ? itemDividerLightColor : itemDividerDarkColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 5),
@@ -141,6 +182,29 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
           ],
         ),
+        if (_showPreview) ...[
+          BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 5.0,
+              sigmaY: 5.0,
+            ),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              height: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) : UIHelper.getDeviceHeight(context) / 1.25,
+              width: UIHelper.isDevicePortrait(context) ? UIHelper.getDeviceWidth(context) : UIHelper.getDeviceHeight(context) / 1.25,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: CircularPhotoComponent(
+                  url: loggedUser!.photoUrl,
+                ),
+              ),
+            ),
+          ),
+        ]
       ],
     );
   }

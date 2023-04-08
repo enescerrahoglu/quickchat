@@ -72,9 +72,9 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
             child: Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.symmetric(vertical: 3),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: primaryColor,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(3), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10), topRight: Radius.circular(10)),
               ),
               child: Row(
@@ -92,6 +92,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextComponent(
+                            color: Colors.white,
                             text: widget.messageModel.content,
                             textAlign: TextAlign.start,
                             headerType: HeaderType.h5,

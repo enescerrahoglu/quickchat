@@ -25,6 +25,9 @@ class CommonKeys {
   static String aysForHomePage = 'ays_for_home_page';
   static String noData = 'no_data';
   static String networkError = 'network_error';
+  static String yourself = 'yourself';
+  static String you = 'you';
+  static String joinDate = 'target_join_date';
 }
 
 class HomePageKeys {
@@ -34,6 +37,8 @@ class HomePageKeys {
 class UserSearchPageKeys {
   static String userSearch = 'user_search';
   static String newChat = 'new_chat';
+  static String sendMessageToYourself = 'send_message_to_yourself';
+  static String userNotFound = 'user_not_found';
 }
 
 class LoginPageKeys {

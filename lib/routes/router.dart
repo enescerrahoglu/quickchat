@@ -3,6 +3,7 @@ import 'package:quickchat/pages/app_pages/home_page.dart';
 import 'package:quickchat/pages/app_pages/indicator_page.dart';
 import 'package:quickchat/pages/app_pages/navigation_page.dart';
 import 'package:quickchat/pages/app_pages/profile_page.dart';
+import 'package:quickchat/pages/app_pages/target_profile_page.dart';
 import 'package:quickchat/pages/app_pages/user_search_page.dart';
 import 'package:quickchat/pages/app_pages/update_profile_page.dart';
 import 'package:quickchat/pages/authentication_pages/email_page.dart';
@@ -75,7 +76,9 @@ class RouteGenerator {
       case userSearchPageRoute:
         return createRoute(const UserSearchPage(), settings);
       case chatPageRoute:
-        return createRoute(ChatPage(), settings);
+        return createRoute(const ChatPage(), settings);
+      case targetProfilePageRoute:
+        return createRoute(const TargetProfilePage(), settings);
       default:
         return createRoute(const LoginPage(), settings);
     }

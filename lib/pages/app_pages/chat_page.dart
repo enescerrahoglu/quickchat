@@ -6,12 +6,11 @@ import 'package:quickchat/components/marquee_text_component.dart';
 import 'package:quickchat/components/text_component.dart';
 import 'package:quickchat/constants/app_constants.dart';
 import 'package:quickchat/constants/color_constants.dart';
-import 'package:quickchat/constants/image_constants.dart';
-import 'package:quickchat/localization/app_localization.dart';
 import 'package:quickchat/models/message_model.dart';
 import 'package:quickchat/models/user_model.dart';
 import 'package:quickchat/providers/provider_container.dart';
 import 'package:quickchat/providers/theme_provider.dart';
+import 'package:quickchat/routes/route_constants.dart';
 import 'package:quickchat/services/user_service.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:quickchat/widgets/message_bubble.dart';
@@ -43,23 +42,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   @override
   void initState() {
     loggedUser = ref.read(loggedUserProvider);
+    targetUser = ref.read(targetUserProvider);
     Future.delayed(Duration.zero, () async {
-      if (ModalRoute.of(context)!.settings.arguments != null) {
-        setState(() {
-          isPageLoading = true;
-        });
-        targetUser = ModalRoute.of(context)!.settings.arguments as UserModel;
-        messages = await userService.getMessages(loggedUser!, targetUser!);
-        debugPrint(messages.length.toString());
-        setState(() {
-          isPageLoading = false;
-        });
-      } else {}
-      if (targetUser == null) {
-        if (mounted) {
-          Navigator.pop(context);
-        }
-      }
+      setState(() {
+        isPageLoading = true;
+      });
+      messages = await userService.getMessages(loggedUser!, targetUser!);
+      setState(() {
+        isPageLoading = false;
+      });
     });
     super.initState();
   }
@@ -72,7 +63,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         title: InkWell(
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
-          onTap: () {},
+          onTap: () {
+            ref.watch(targetUserProvider.notifier).state = targetUser;
+            if (targetUser!.email == loggedUser!.email) {
+              Navigator.pushNamed(context, profilePageRoute);
+            } else {
+              Navigator.pushNamed(context, targetProfilePageRoute);
+            }
+          },
           child: Row(
             children: [
               Align(
@@ -81,7 +79,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   width: 35,
                   height: 35,
                   child: CircularPhotoComponent(
-                    url: targetUser != null ? targetUser!.photoUrl : ImageAssetKeys.defaultProfilePhotoUrl,
+                    url: targetUser!.photoUrl,
                     smallCircularProgressIndicator: true,
                   ),
                 ),
@@ -89,11 +87,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: MarqueeTextComponent(
-                  text: getTranslated(
-                    context,
-                    targetUser != null ? "${targetUser!.firstName} ${targetUser!.lastName}" : "",
-                  ),
-                  color: Colors.white,
+                  text: "${targetUser!.firstName} ${targetUser!.lastName}",
+                  color: themeProvider.isDarkMode ? textPrimaryDarkColor : textPrimaryLightColor,
                   headerType: HeaderType.h4,
                   fontWeight: FontWeight.bold,
                 ),
@@ -101,12 +96,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             ],
           ),
         ),
-        backgroundColor: themeProvider.isDarkMode ? itemBackgroundDarkColor : primaryColor,
+        backgroundColor: themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor,
         centerTitle: false,
         titleSpacing: 0,
         leading: IconButton(
           splashRadius: AppConstants.iconSplashRadius,
-          icon: const IconComponent(iconData: CustomIconData.chevronLeft, color: iconDarkColor),
+          icon: const IconComponent(iconData: CustomIconData.chevronLeft),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -115,108 +110,105 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              isPageLoading
-                  ? const Expanded(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView.builder(
-                        reverse: true,
-                        shrinkWrap: true,
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          int reversedIndex = messages.length - 1 - index;
-                          return MessageBubble(
-                            messageModel: messages[reversedIndex],
-                            loggedUser: loggedUser!,
-                          );
-                        },
+        child: Column(
+          children: [
+            isPageLoading
+                ? const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      reverse: true,
+                      shrinkWrap: true,
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        int reversedIndex = messages.length - 1 - index;
+                        return MessageBubble(
+                          messageModel: messages[reversedIndex],
+                          loggedUser: loggedUser!,
+                        );
+                      },
+                    ),
+                  ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor,
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        style: TextStyle(
+                          color: (themeProvider.isDarkMode ? textPrimaryDarkColor : textPrimaryLightColor),
+                        ),
+                        cursorColor: primaryColor,
+                        toolbarOptions: const ToolbarOptions(
+                          copy: true,
+                          cut: true,
+                          paste: true,
+                          selectAll: true,
+                        ),
+                        enableInteractiveSelection: true,
+                        enableSuggestions: true,
+                        enabled: true,
+                        enableIMEPersonalizedLearning: true,
+                        scribbleEnabled: true,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor,
+                          hintStyle: TextStyle(color: (themeProvider.isDarkMode ? hintTextDarkColor : hintTextLightColor)),
+                          contentPadding: const EdgeInsets.all(10),
+                          border: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          disabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                        ),
+                        keyboardType: TextInputType.multiline,
+                        controller: chatTextEditingController,
+                        minLines: 1,
+                        maxLines: 3,
                       ),
                     ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(10))),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          style: TextStyle(
-                            color: (themeProvider.isDarkMode ? textPrimaryDarkColor : textPrimaryLightColor),
-                          ),
-                          cursorColor: primaryColor,
-                          toolbarOptions: const ToolbarOptions(
-                            copy: true,
-                            cut: true,
-                            paste: true,
-                            selectAll: true,
-                          ),
-                          enableInteractiveSelection: true,
-                          enableSuggestions: true,
-                          enabled: true,
-                          enableIMEPersonalizedLearning: true,
-                          scribbleEnabled: true,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: themeProvider.isDarkMode ? itemBackgroundDarkColor : itemBackgroundLightColor,
-                            hintStyle: TextStyle(color: (themeProvider.isDarkMode ? hintTextDarkColor : hintTextLightColor)),
-                            contentPadding: const EdgeInsets.all(10),
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            disabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                          ),
-                          keyboardType: TextInputType.multiline,
-                          controller: chatTextEditingController,
-                          minLines: 1,
-                          maxLines: 3,
-                        ),
+                    IconButton(
+                      splashRadius: AppConstants.iconSplashRadius,
+                      icon: IconComponent(
+                        iconData: CustomIconData.paperPlaneTop,
+                        color: (chatTextEditingController.text.trim().isEmpty || isLoading || isPageLoading) ? Colors.grey : primaryColor,
                       ),
-                      IconButton(
-                        splashRadius: AppConstants.iconSplashRadius,
-                        icon: IconComponent(
-                          iconData: CustomIconData.paperPlaneTop,
-                          color: (chatTextEditingController.text.trim().isEmpty || isLoading || isPageLoading) ? Colors.grey : primaryColor,
-                        ),
-                        onPressed: (chatTextEditingController.text.trim().isEmpty || isLoading || isPageLoading)
-                            ? null
-                            : () async {
-                                MessageModel messageModel = MessageModel(
-                                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                    content: chatTextEditingController.text,
-                                    senderMail: loggedUser!.email,
-                                    messageDate: DateTime.now().toString());
-                                await userService.sendMessage(loggedUser!, targetUser!, messageModel);
-                              },
-                      )
-                    ],
-                  ),
+                      onPressed: (chatTextEditingController.text.trim().isEmpty || isLoading || isPageLoading)
+                          ? null
+                          : () async {
+                              MessageModel messageModel = MessageModel(
+                                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                                  content: chatTextEditingController.text,
+                                  senderMail: loggedUser!.email,
+                                  messageDate: DateTime.now().toString());
+                              chatTextEditingController.clear();
+                              await userService.sendMessage(loggedUser!, targetUser!, messageModel);
+                            },
+                    )
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
-
-  void _sendMessage() async {}
 }
