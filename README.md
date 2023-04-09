@@ -2,7 +2,8 @@
 
 QuickChat
 
-![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/KB8qxy2yaZA/0.jpg](https://www.youtube.com/watch?v=KB8qxy2yaZA)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/KB8qxy2yaZA/0.jpg)](https://www.youtube.com/watch?v=KB8qxy2yaZA)
+
 
 ## Getting Started
 
