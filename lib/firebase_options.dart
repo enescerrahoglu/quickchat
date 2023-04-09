@@ -47,30 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBduTorcNnOGgAFXvHmHnpBIuhPBClmZO4',
-    appId: '1:253847803637:web:e0f64a3b6fa10135e197bc',
-    messagingSenderId: '253847803637',
-    projectId: 'quickchat-application',
-    authDomain: 'quickchat-application.firebaseapp.com',
-    storageBucket: 'quickchat-application.appspot.com',
-    measurementId: 'G-D3J9ZXNVT4',
+    apiKey: 'apiKey',
+    appId: 'appId',
+    messagingSenderId: 'messagingSenderId',
+    projectId: 'projectId',
+    authDomain: 'authDomain',
+    storageBucket: 'storageBucket',
+    measurementId: 'measurementId',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAvxHsBAatU6UENUIXPUeOqhSU8-jXcOPw',
-    appId: '1:253847803637:android:839979c7593841dde197bc',
-    messagingSenderId: '253847803637',
-    projectId: 'quickchat-application',
-    storageBucket: 'quickchat-application.appspot.com',
+    apiKey: 'apiKey',
+    appId: 'appId',
+    messagingSenderId: 'messagingSenderId',
+    projectId: 'projectId',
+    storageBucket: 'storageBucket',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBSGdUU3e4tLtuhih9H1LIQTq82FbWmsUI',
-    appId: '1:253847803637:ios:688e10aecb1a483ee197bc',
-    messagingSenderId: '253847803637',
-    projectId: 'quickchat-application',
-    storageBucket: 'quickchat-application.appspot.com',
-    iosClientId: '253847803637-nq9cor76ll6dtdle1thmv5g6lpuho55t.apps.googleusercontent.com',
-    iosBundleId: 'com.enescerrahoglu.quickchat',
+    apiKey: 'apiKey',
+    appId: 'appId',
+    messagingSenderId: 'messagingSenderId',
+    projectId: 'projectId',
+    storageBucket: 'storageBucket',
+    iosClientId: 'iosClientId',
+    iosBundleId: 'iosBundleId',
   );
 }
