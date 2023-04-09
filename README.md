@@ -1,6 +1,8 @@
 # quickchat
 
-A new Flutter project.
+QuickChat
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/KB8qxy2yaZA/0.jpg)](https://www.youtube.com/watch?v=KB8qxy2yaZA)
 
 ## Getting Started
 
