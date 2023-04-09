@@ -2,17 +2,8 @@
 
 QuickChat
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/KB8qxy2yaZA/0.jpg)](https://www.youtube.com/watch?v=KB8qxy2yaZA)
+(https://www.youtube.com/watch?v=KB8qxy2yaZA)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project was developed by the F-35 team within the Game and App Academy 2023 AppJam competition.
