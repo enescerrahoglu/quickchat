@@ -11,14 +11,14 @@ exports.sendVerificationCode = functions.https.onCall((data, context) => {
         host: 'smtp-mail.outlook.com',
         port: 587,
         auth: {
-            user: 'user',
-            pass: 'password'
+            user: 'quickchat.app@hotmail.com',
+            pass: 'QuickChatApp2023'
         },
-        from: 'user',
+        from: 'quickchat.app@hotmail.com',
     });
 
     const mailOptions = {
-        from: 'QuickChat <user>',
+        from: 'QuickChat <quickchat.app@hotmail.com>',
         to: data.to,
         subject: 'QuickChat Verification Code',
         html: `
