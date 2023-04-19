@@ -9,6 +9,4 @@ class AppConstants {
   static BorderRadius borderRadius = BorderRadius.circular(10);
 
   static const double iconSplashRadius = 22;
-
-  static CustomIconData? selectedNoteIcon;
 }
