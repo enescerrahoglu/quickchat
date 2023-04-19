@@ -14,7 +14,7 @@ exports.sendVerificationCode = functions.https.onCall((data, context) => {
             user: 'user',
             pass: 'pass'
         },
-        from: 'quickchat.app@hotmail.com',
+        from: 'from',
     });
 
     const mailOptions = {
